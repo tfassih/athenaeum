@@ -1,5 +1,6 @@
 const express = require('express');
 var bodyParser = require('body-parser');
+const {queryResult} = require("pg-promise");
 const app = express();
 const pgp = require('pg-promise')();
 const db = pgp('postgres://postgres:password@localhost:5432/athenaeum')
@@ -16,11 +17,13 @@ app.get('/', function(req, res) {
 })
 
 app.get('/users', function(req, res) {
-        var users = "";
-        db.any('SELECT * FROM users').then((data) => {
-            users = data.id + data.username;
-            res.render('users.ejs', {user: users});
-        });
+    var users;
+    db.result('SELECT * FROM users').then((result) => {
+        users = result.rows;
+        console.log(users);
+        res.render('users.ejs', {user: users});
+    });
+
 });
 
 app.listen(port, function(err){
