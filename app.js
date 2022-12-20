@@ -1,7 +1,8 @@
 const express = require('express');
 var bodyParser = require('body-parser');
 const app = express();
-
+const pgp = require('pg-promise')();
+const db = pgp('postgres://postgres:password@localhost:5432/athenaeum')
 const port = 3000;
 
 app.use(express.static(__dirname + '/views'));
@@ -11,12 +12,16 @@ app.set('view engine', 'html');
 app.set('views', './views');
 
 app.get('/', function(req, res) {
-    res.sendFile('./views/index.ejs')
+    res.render('index.ejs')
 })
 
 app.get('/users', function(req, res) {
-    res.render('users.ejs', {user: "frank murphy"});
-})
+        var users = "";
+        db.any('SELECT * FROM users').then((data) => {
+            users = data.id + data.username;
+            res.render('users.ejs', {user: users});
+        });
+});
 
 app.listen(port, function(err){
     if(err) {
