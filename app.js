@@ -41,6 +41,23 @@ app.post('/createuser/:username', async function (req, res) {
     console.log(results.rows);
     res.send( {user: results.rows});
 });
+//UpdateUser
+app.put('/updateuser/:id/:username', async function (req, res) {
+    const id = parseInt(req.params.id);
+    const username = req.body;
+    const results = await db
+        .query('UPDATE users SET username = $1 WHERE id = $2',[username, id]);
+    console.log(results.rows);
+    res.send({user: results.rows});
+});
+//DeleteUser
+app.delete('/deleteuser/:id', async function (req, res){
+    const id = parseInt(req.params.id);
+    const results = await db.query('DELETE FROM users WHERE id = $1', [id]);
+    console.log(results.rows);
+    res.send({user: results.rows});
+});
+
 
 
 app.listen(port, function(err){
