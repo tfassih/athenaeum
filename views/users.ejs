@@ -6,8 +6,10 @@
 </head>
 <body>
   <h1>USERS</h1>
- <ul>
-     <%= user %>
- </ul>
+ <p>
+     <% for(var i = 0; i < user.length; i++){ %>
+        <p>ID: <%= user[i].id%> Username: <%= user[i].username %> library-ID: <%= user[i].library_id %></p>
+    <% } %>
+ </p>
 </body>
 </html>

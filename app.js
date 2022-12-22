@@ -1,10 +1,15 @@
 const express = require('express');
-var bodyParser = require('body-parser');
-const {queryResult} = require("pg-promise");
-const {json} = require("express");
+const bodyParser = require('body-parser');
 const app = express();
-const pgp = require('pg-promise')();
-const db = pgp('postgres://postgres:password@localhost:5432/athenaeum')
+const {Client} = require('pg');
+const db = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'athenaeum',
+    password: 'password',
+    port: 5432
+});
+db.connect();
 const port = 3000;
 
 app.use(express.static(__dirname + '/views'));
@@ -18,22 +23,13 @@ app.get('/', function(req, res) {
     res.render('index.ejs')
 })
 
-app.get('/users', function(req, res) {
-    var users;
-    db.result('SELECT * FROM users').then((result) => {
-        users = result.rows;
-        console.log(users);
-        res.get('user');
-
-        res.render('users.ejs', {user: res.send(users)});
 
 
-    }).catch(err => {
-        console.error(err);
-    }).finally(() => {
-        res.end();
-    })
 
+app.get('/users', async function (req, res) {
+    const results = await db.query('SELECT * FROM users');
+    console.log(results.rows);
+    res.render('users.ejs', {user: results.rows});
 });
 
 app.listen(port, function(err){
